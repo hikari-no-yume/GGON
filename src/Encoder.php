@@ -3,6 +3,10 @@ namespace ajf\GGON;
 
 require_once '../vendor/autoload.php';
 
+class GGONEncodeException extends \Exception
+{
+}
+
 class Encoder
 {
     // Encodes a array or string to a GGON (Gang Garrison Object Notation) text
@@ -73,7 +77,7 @@ class Encoder
         } else if ($numberToString && (is_int($value) || is_float($value))) {
             return self::encode(strval($value));
         } else {
-            throw new GGONParseException("Cannot encode value of type " . gettype($value));
+            throw new GGONEncodeException("Cannot encode value of type " . gettype($value));
         }
     }
 }
