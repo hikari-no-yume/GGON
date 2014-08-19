@@ -73,7 +73,7 @@ class Encoder
         } else if ($numberToString && (is_int($value) || is_float($value))) {
             return self::encode(strval($value));
         } else {
-            throw new Exception("Cannot encode value of type " . gettype($value));
+            throw new GGONParseException("Cannot encode value of type " . gettype($value));
         }
     }
 }
