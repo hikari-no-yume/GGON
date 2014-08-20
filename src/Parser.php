@@ -1,8 +1,6 @@
 <?php
 namespace ajf\GGON;
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
 use \SplQueue as Queue;
 
 class GGONParseException extends \Exception
