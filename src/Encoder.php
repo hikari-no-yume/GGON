@@ -7,7 +7,7 @@ class GGONEncodeException extends \Exception
 
 class Encoder
 {
-    // Encodes a array or string to a GGON (Gang Garrison Object Notation) text
+    // Encodes an array or string to a GGON (Gang Garrison Object Notation) text
     // Encoding is recursive (arrays within arrays will be encoded)
     // If $numberToString is set to true, then ints and floats will be encoded as strings
     // Returns the encoded text
@@ -19,7 +19,7 @@ class Encoder
             $alphanumeric = false;
             for ($i = 0; $i < strlen($value); $i++) {
                 $char = $value[$i];
-                if (('a' <= $char && $char <= 'z') || ('A' <= $char && $char <= 'Z') || ('0' <= $char && $char <= '9') || $char === '_' or $char === '.' or $char === '+' or $char === '-') {
+                if (('a' <= $char && $char <= 'z') || ('A' <= $char && $char <= 'Z') || ('0' <= $char && $char <= '9') || $char === '_' || $char === '.' || $char === '+' || $char === '-') {
                     $alphanumeric = true;
                 } else {
                     $alphanumeric = false;

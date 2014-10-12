@@ -119,16 +119,16 @@ class Parser
                 continue;
             }
             
-            // skip whitespace (space, tab, new line or carriage return)
+            // skip whitespace (space, tab, new line || carriage return)
             if ($char === " " || $char === "\t" || $char === "\n" || $char == "\r") {
                 $text = substr($text, 1);
                 continue;
             }
             
             // "identifiers" (bare word strings, really) of format [a-zA-Z0-9_]+
-            if (('a' <= $char && $char <= 'z') || ('A' <= $char && $char <= 'Z') || ('0' <= $char && $char <= '9') || $char === '_' or $char === '.' or $char === '+' or $char === '-') {
+            if (('a' <= $char && $char <= 'z') || ('A' <= $char && $char <= 'Z') || ('0' <= $char && $char <= '9') || $char === '_' || $char === '.' || $char === '+' || $char === '-') {
                 $identifier = '';
-                while (('a' <= $char && $char <= 'z') || ('A' <= $char && $char <= 'Z') || ('0' <= $char && $char <= '9') || $char === '_' or $char === '.' or $char === '+' or $char === '-') {
+                while (('a' <= $char && $char <= 'z') || ('A' <= $char && $char <= 'Z') || ('0' <= $char && $char <= '9') || $char === '_' || $char === '.' || $char === '+' || $char === '-') {
                     if (strlen($text) === 0) {
                         throw new GGONParseException('Unexpected end of text while parsing string');
                     }
@@ -154,7 +154,7 @@ class Parser
                     if ($char == "\\") {
                         $text = substr($text, 1);
                         $char = $text[0];
-                        if ($char === "'" or $char === "\\") {
+                        if ($char === "'" || $char === "\\") {
                             $str .= $char;
                         } else if ($char === 'n') {
                             $str .= "\n";
