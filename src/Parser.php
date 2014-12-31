@@ -46,8 +46,8 @@ class Parser
                     $tokenValue = $tokens->dequeue();
                     
                     // { can only be followed by } or a key
-                    if ($tokenValue !== '{}') {
-                        throw new GGONParseExceptuon("Unexpected token \"$tokenValue\" after opening \"{\"");
+                    if ($tokenValue !== '}') {
+                        throw new GGONParseException("Unexpected token \"$tokenValue\" after opening \"{\"");
                     }
                     
                     // It's {} so we can just return our empty array
