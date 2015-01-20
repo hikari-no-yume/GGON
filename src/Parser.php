@@ -29,51 +29,89 @@ class Parser
                 return substr($token, 1);
             }
             
-            // GGON has only two primitives - it could only be string or opening {
-            if ($token !== '{') {
+            // GGON has only three primitives - it could only be string, opening { or opening [
+            if ($token !== '{' and $token !== '[') {
                 throw new GGONParseException("Unexpected token \"$token\"");
             }
-                
+            
+            // Either way it decodes to an array
             $array = [];
             
-            $token = $tokens->bottom();
-            if ($token === "}") {
-                $tokens->dequeue();
+            // GGON map
+            if ($token === '{') {
+                $token = $tokens->bottom();
+                if ($token === "}") {
+                    $tokens->dequeue();
 
-                // It's {} so we can just return our empty array
-                return $array;
-            } else if ($token[0] == '%') {
-                // Parse each key of our map
-                while (!$tokens->isEmpty()) {
-                    $token = $tokens->dequeue();
-                    
-                    $key = substr($token, 1);
-                    
-                    $token = $tokens->dequeue();
-                    
-                    // Following token must be a : as we have a key
-                    if ($token !== ":") {
-                        throw new GGONParseException("Unexpected token \"$token\" after key");
+                    // It's {} so we can just return our empty array
+                    return $array;
+                } else if ($token[0] == '%') {
+                    // Parse each key of our map
+                    while (!$tokens->isEmpty()) {
+                        $token = $tokens->dequeue();
+                        
+                        $key = substr($token, 1);
+                        
+                        $token = $tokens->dequeue();
+                        
+                        // Following token must be a : as we have a key
+                        if ($token !== ":") {
+                            throw new GGONParseException("Unexpected token \"$token\" after key");
+                        }
+                        
+                        // Now we recurse to parse our value!
+                        $value = self::parseTokens($tokens);
+                        
+                        $array[$key] = $value;
+                        
+                        $token = $tokens->dequeue();
+                        
+                        // After key, colon and value, next token must be , or }
+                        if ($token === ',') {
+                            continue;
+                        } else if ($token === '}') {
+                            return $array;
+                        } else {
+                            throw new GGONParseException("Unexpected token \"$token\" after value");
+                        }
                     }
-                    
-                    // Now we recurse to parse our value!
-                    $value = self::parseTokens($tokens);
-                    
-                    $array[$key] = $value;
-                    
-                    $token = $tokens->dequeue();
-                    
-                    // After key, colon and value, next token must be , or }
-                    if ($token === ',') {
-                        continue;
-                    } else if ($token === '}') {
-                        return $array;
-                    } else {
-                        throw new GGONParseException("Unexpected token \"$token\" after value");
+                } else {
+                    throw new GGONParseException("Unknown token \"$token\"");
+                }
+            // GGON list
+            } else {
+                $token = $tokens->bottom();
+
+                if ($token === ']') {
+                    $tokens->dequeue();
+
+                    // It's an empty list
+                    $array["length"] = "0";
+                    return $array;
+                } else {
+                    $length = 0;
+
+                    // Parse each value in our list
+                    while (!$tokens->isEmpty()) {
+                        // Now we recurse to parse our value!
+                        $value = self::parseTokens($tokens);
+
+                        $array[$length] = $value;
+                        $length += 1;
+
+                        $token = $tokens->dequeue();
+
+                        // After value, next token must be , or ]
+                        if ($token === ',') {
+                            continue;
+                        } else if ($token === ']') {
+                            $array["length"] = (string)$length;
+                            return $array;
+                        } else {
+                            throw new GGONParseException("Unknown token \"$token\"");
+                        }
                     }
                 }
-            } else {
-                throw new GGONParseException("Unknown token \"$token\"");
             }
         }
     }
@@ -91,8 +129,8 @@ class Parser
         while ($i < $len) {
             $char = $text[$i];
             
-            // basic punctuation: '{', '}', ':' and ','
-            if ($char === '{' || $char === '}' || $char === ':' || $char === ',') {
+            // basic punctuation: '{', '}', ':', '[', ']',  and ','
+            if ($char === '{' || $char === '}' || $char === ':' || $char === ',' || $char === '[' || $char === ']') {
                 $tokens->enqueue($char);
                 $i += 1;
                 continue;

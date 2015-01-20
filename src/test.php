@@ -68,19 +68,20 @@ class Tests extends \PHPUnit_Framework_TestCase
             $parsed,
             [
                 "items" => [
-                    [
+                    "0" => [
                         "type" => "foo",
                         "x" => "12.0",
                         "y" => "13.5"
                     ],
-                    [
+                    "1" => [
                         "type" => "bar",
                         "x" => "12.0",
                         "y" => "13.5",
                         "sub items" => [
                             "length" => 0
                         ]
-                    ]
+                    ],
+                    "length" => "2"
                 ]
             ]
         );
