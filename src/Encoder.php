@@ -56,6 +56,56 @@ class Encoder
             
             return $out;
         } else if (is_array($value)) {
+            // If it has a length, try to encode as list
+            if (array_key_exists("length", $value)) {
+                $lengthString = (string)$value["length"];
+                $validLength = true;
+
+                // Ensure that the length is numeric
+                // PHP has functions for this, but we copy the GG2 algorithm
+                // to ensure compatibility
+                for ($i = 0; $i < strlen($lengthString); $i += 1) {
+                    if (!('0' <= $lengthString[$i] && $lengthString[$i] <= '9')) {
+                        $validLength = false;
+                        break;
+                    }
+                }
+
+                if ($validLength) {
+                    $length = (integer)$lengthString;
+
+                    // GGON lists aren't sparse
+                    // There should be a key for each element, plus the length key
+                    if (count($value) === $length + 1) {
+                        $validList = true;
+
+                        for ($i = 0; $i < $length; $i += 1) {
+                            if (!array_key_exists($i, $value)) {
+                                $validList = false;
+                                break;
+                            }
+                        }
+
+                        // Finally, we know this is a valid list and can encode it!
+                        if ($validList) {
+                            $out = "[";
+
+                            for ($i = 0; $i < $length; $i += 1) {
+                                if ($i !== 0) {
+                                    $out .= ",";
+                                }
+                                $out .= self::encode($value[$i], $numberToString);
+                            }
+
+                            $out .= "]";
+
+                            return $out;
+                        }
+                    }
+                }
+            }
+
+            // Failing that, encode as a map
             $out = "{";
             
             $first = true;
